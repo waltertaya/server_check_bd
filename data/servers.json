@@ -1,0 +1,163 @@
+[
+  {
+    "id": "1",
+    "name": "Google",
+    "description": "web",
+    "url": "https://www.google.com",
+    "method": "GET",
+    "expectedStatus": 200,
+    "timeout": 5000,
+    "interval": 60000,
+    "createdAt": "2025-06-04T19:43:32.517925357+03:00",
+    "lastStatus": {
+      "isUp": true,
+      "statusCode": 200,
+      "responseTime": 218,
+      "lastChecked": "2025-06-05T18:30:06.701754763+03:00",
+      "state": "healthy"
+    }
+  },
+  {
+    "id": "2",
+    "name": "Example API",
+    "description": "web",
+    "url": "https://jsonplaceholder.typicode.com/posts/1",
+    "method": "GET",
+    "expectedStatus": 200,
+    "timeout": 5000,
+    "interval": 120000,
+    "createdAt": "2025-06-04T19:43:32.517925357+03:00",
+    "lastStatus": {
+      "isUp": true,
+      "statusCode": 200,
+      "responseTime": 82,
+      "lastChecked": "2025-06-05T18:28:48.672314457+03:00",
+      "state": "healthy"
+    }
+  },
+  {
+    "id": "20250604200225.647",
+    "name": "waltertaya portfolio",
+    "description": "web",
+    "url": "https://waltertayarg.me",
+    "method": "GET",
+    "expectedStatus": 200,
+    "timeout": 5000,
+    "interval": 60000,
+    "createdAt": "2025-06-04T20:02:25.647349896+03:00",
+    "lastStatus": {
+      "isUp": false,
+      "lastChecked": "2025-06-05T18:29:25.720869563+03:00",
+      "error": "Get \"https://waltertayarg.me\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+      "state": "down"
+    }
+  },
+  {
+    "id": "20250604200936.209",
+    "name": "youtube J.I.D",
+    "description": "web",
+    "url": "https://www.youtube.com/watch?v=Y19q-7VN2WI\u0026list=RDGMEMHDXYb1_DDSgDsobPsOFxpAVMJWT_wzIG4gY\u0026index=13",
+    "method": "GET",
+    "expectedStatus": 200,
+    "timeout": 5000,
+    "interval": 60000,
+    "createdAt": "2025-06-04T20:09:36.209619461+03:00",
+    "lastStatus": {
+      "isUp": true,
+      "statusCode": 200,
+      "responseTime": 322,
+      "lastChecked": "2025-06-05T18:30:07.018523566+03:00",
+      "state": "healthy"
+    }
+  },
+  {
+    "id": "20250604201715.836",
+    "name": "nemis.education.go.ke",
+    "description": "web",
+    "url": "https://nemis.education.go.ke/",
+    "method": "GET",
+    "expectedStatus": 200,
+    "timeout": 5000,
+    "interval": 60000,
+    "createdAt": "2025-06-04T20:17:15.836606899+03:00",
+    "lastStatus": {
+      "isUp": true,
+      "statusCode": 200,
+      "responseTime": 1148,
+      "lastChecked": "2025-06-05T18:29:57.907074441+03:00",
+      "state": "healthy"
+    }
+  },
+  {
+    "id": "20250604201937.347",
+    "name": "localhost",
+    "description": "web",
+    "url": "http://localhost:5174/",
+    "method": "GET",
+    "expectedStatus": 200,
+    "timeout": 5000,
+    "interval": 60000,
+    "createdAt": "2025-06-04T20:19:37.347695816+03:00",
+    "lastStatus": {
+      "isUp": false,
+      "lastChecked": "2025-06-05T18:29:35.904647057+03:00",
+      "error": "Get \"http://localhost:5174/\": dial tcp 127.0.0.1:5174: connect: connection refused",
+      "state": "down"
+    }
+  },
+  {
+    "id": "20250604202505.583",
+    "name": "chatgpt",
+    "description": "web",
+    "url": "https://chatgpt.com/",
+    "method": "GET",
+    "expectedStatus": 200,
+    "timeout": 5000,
+    "interval": 60000,
+    "createdAt": "2025-06-04T20:25:05.583799251+03:00",
+    "updatedAt": "2025-06-04T20:32:55.443341673+03:00",
+    "lastStatus": {
+      "isUp": true,
+      "statusCode": 200,
+      "responseTime": 826,
+      "lastChecked": "2025-06-05T18:29:50.72349821+03:00",
+      "state": "healthy"
+    }
+  },
+  {
+    "id": "20250604202558.558",
+    "name": "admin",
+    "description": "web",
+    "url": "http://www.lolan.com/login?dst=http%3A%2F%2Fconnectivity-check.ubuntu.com.%2F",
+    "method": "GET",
+    "expectedStatus": 200,
+    "timeout": 5000,
+    "interval": 60000,
+    "createdAt": "2025-06-04T20:25:58.558486287+03:00",
+    "updatedAt": "2025-06-04T20:27:28.693314084+03:00",
+    "lastStatus": {
+      "isUp": true,
+      "statusCode": 200,
+      "responseTime": 24,
+      "lastChecked": "2025-06-05T18:29:48.100733508+03:00",
+      "state": "healthy"
+    }
+  },
+  {
+    "id": "20250605004424.634",
+    "name": "http://localhost:5174/dashboard",
+    "description": "web",
+    "url": "http://localhost:5174/dashboard",
+    "method": "GET",
+    "expectedStatus": 200,
+    "timeout": 5000,
+    "interval": 60000,
+    "createdAt": "2025-06-05T00:44:24.634929501+03:00",
+    "lastStatus": {
+      "isUp": false,
+      "lastChecked": "2025-06-05T18:29:35.904754768+03:00",
+      "error": "Get \"http://localhost:5174/dashboard\": dial tcp 127.0.0.1:5174: connect: connection refused",
+      "state": "down"
+    }
+  }
+]
