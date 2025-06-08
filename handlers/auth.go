@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/waltertaya/server_check_bd/models"
-	"github.com/waltertaya/server_check_bd/db" // sqlite database(connected using sqlx)
+	"github.com/waltertaya/server_check_bd/db"
 )
 
 func LoginHandler(c *gin.Context) {
