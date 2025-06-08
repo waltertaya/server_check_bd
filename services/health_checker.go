@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"pulse/models"
+	"github.com/waltertaya/server_check_bd/models"
 )
 
 // HealthChecker is responsible for checking server health
@@ -48,7 +48,7 @@ func (hc *HealthChecker) Start() {
 	go hc.broadcastStatusUpdates()
 
 	// Initialize timers for all servers
-	servers := hc.serverService.GetServers()
+	servers, _ := hc.serverService.GetServers()
 	for _, server := range servers {
 		hc.scheduleServerCheck(server)
 	}

@@ -9,21 +9,28 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
-	"golang.org/x/net/websocket"
+	_ "github.com/mattn/go-sqlite3"
 
-	"pulse/config"
-	"pulse/handlers"
-	"pulse/services"
+	"github.com/waltertaya/server_check_bd/db"
+	"github.com/waltertaya/server_check_bd/handlers"
+	"github.com/waltertaya/server_check_bd/initialisers"
+	"github.com/waltertaya/server_check_bd/services"
+	"golang.org/x/net/websocket"
 )
 
-func main() {
-	// Load environment variables from .env file if it exists
-	_ = godotenv.Load()
-	config.Init()
+func init() {
+	initialisers.LoadEnv()
+}
 
-	// Initialize services
-	serverService := services.NewServerService()
+func main() {
+
+	err := db.Connect()
+	if err == nil {
+		fmt.Println("Connected to database successfully")
+	}
+
+	// Initialize services with DB
+	serverService := services.NewServerService(db.DB)
 	healthChecker := services.NewHealthChecker(serverService)
 	go healthChecker.Start()
 
@@ -40,9 +47,13 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// 1) Register all /api routes
+	// Register all /api routes
 	api := router.Group("/api")
 	{
+		// Authentication routes
+		api.POST("/auth/login", handlers.LoginHandler)
+		api.POST("/auth/register", handlers.RegisterHandler)
+		// Server management routes
 		api.GET("/servers", handlers.GetServers(serverService))
 		api.GET("/servers/:id", handlers.GetServer(serverService))
 		api.POST("/servers", handlers.CreateServer(serverService))
@@ -52,39 +63,13 @@ func main() {
 		api.GET("/servers/:id/history", handlers.GetServerHistory(serverService))
 	}
 
-	// 2) Serve static assets from the Vite build
-	//    Vite’s dist/ output typically has:
-	//      - index.html
-	//      - assets/ (JS/CSS/images)
-	//      - favicon.ico, etc.
-	//
-	//    So we expose "/assets/*" and any known files, then use NoRoute
-	//    to serve index.html on all other non-API requests (SPA fallback).
-
-	// Serve the "assets" directory
-	router.Static("/assets", "./frontend/dist/assets")
-
-	// Serve other static files if they exist (e.g. favicon, robots.txt)
-	router.StaticFile("/favicon.ico", "./frontend/dist/favicon.ico")
-	router.StaticFile("/robots.txt", "./frontend/dist/robots.txt")
-
-	// 3) SPA fallback: for any GET that didn’t match /api or /assets, serve index.html
-	router.NoRoute(func(c *gin.Context) {
-		// Only intercept GET requests (so API POST/PUT/etc. still return 404 if not found)
-		if c.Request.Method == http.MethodGet {
-			c.File("./frontend/dist/index.html")
-		} else {
-			c.AbortWithStatus(http.StatusNotFound)
-		}
-	})
-
-	// 4) WebSocket handler on a separate net/http mux
+	// WebSocket handler on a separate net/http mux
 	wsServer := websocket.Server{
 		Handler: handlers.WebSocketHandler(healthChecker),
 	}
 	http.Handle("/ws", wsServer)
 
-	// 5) Start listening
+	// Start listening
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"

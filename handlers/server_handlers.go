@@ -5,15 +5,14 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-
-	"pulse/models"
-	"pulse/services"
+	"github.com/waltertaya/server_check_bd/models"
+	"github.com/waltertaya/server_check_bd/services"
 )
 
 // GetServers returns all servers
 func GetServers(service *services.ServerService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		servers := service.GetServers()
+		servers, _ := service.GetServers()
 		c.JSON(http.StatusOK, servers)
 	}
 }
@@ -102,7 +101,7 @@ func CheckServer(checker *services.HealthChecker) gin.HandlerFunc {
 func GetServerHistory(service *services.ServerService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-		
+
 		// Parse limit query parameter
 		limit := 50
 		limitStr := c.DefaultQuery("limit", "50")

@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/waltertaya/server_check_bd/services"
 	"golang.org/x/net/websocket"
-
-	"pulse/services"
 )
 
 // WebSocketHandler handles WebSocket connections
