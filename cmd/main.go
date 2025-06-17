@@ -1,40 +1,48 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
-	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	_ "github.com/mattn/go-sqlite3"
-
-	"github.com/waltertaya/server_check_bd/db"
-	"github.com/waltertaya/server_check_bd/handlers"
-	"github.com/waltertaya/server_check_bd/initialisers"
-	"github.com/waltertaya/server_check_bd/services"
-	"golang.org/x/net/websocket"
+	"github.com/waltertaya/server_check_bd/internal/db"
+	"github.com/waltertaya/server_check_bd/internal/handlers"
+	"github.com/waltertaya/server_check_bd/internal/logger"
+	"github.com/waltertaya/server_check_bd/internal/services"
 )
 
-func init() {
-	initialisers.LoadEnv()
-}
-
 func main() {
-
-	err := db.Connect()
-	if err == nil {
-		fmt.Println("Connected to database successfully")
+	// Initialize logger
+	if err := logger.Init(logger.INFO, "logs/app.log"); err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
 	}
 
-	// Initialize services with DB
-	serverService := services.NewServerService(db.DB)
+	// Initialize database
+	database, err := db.ConnectDB()
+	if err != nil {
+		logger.Error("Failed to connect to database: %v", err)
+		return
+	}
+	defer database.Close()
+
+	// Run migrations
+	if err := db.RunMigrations(database); err != nil {
+		logger.Error("Failed to run migrations: %v", err)
+		return
+	}
+
+	// Initialize services
+	serverService := services.NewServerService(database)
 	healthChecker := services.NewHealthChecker(serverService)
 	go healthChecker.Start()
 
-	// Initialize Gin router
+	// Initialize handlers
+	authHandlers := handlers.NewAuthHandlers(database)
+	serverHandlers := handlers.NewServerHandlers(serverService, healthChecker)
+	wsHandler := handlers.NewWebSocketHandler(healthChecker)
+
+	// Initialize router
 	router := gin.Default()
 
 	// Configure CORS
@@ -47,33 +55,23 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// Register all /api routes
-	api := router.Group("/api")
-	{
-		// Authentication routes
-		api.POST("/auth/login", handlers.LoginHandler)
-		api.POST("/auth/register", handlers.RegisterHandler)
-		// Server management routes
-		api.GET("/servers", handlers.GetServers(serverService))
-		api.GET("/servers/:id", handlers.GetServer(serverService))
-		api.POST("/servers", handlers.CreateServer(serverService))
-		api.PUT("/servers/:id", handlers.UpdateServer(serverService))
-		api.DELETE("/servers/:id", handlers.DeleteServer(serverService))
-		api.POST("/servers/:id/check", handlers.CheckServer(healthChecker))
-		api.GET("/servers/:id/history", handlers.GetServerHistory(serverService))
-	}
+	// Auth routes
+	router.POST("/api/auth/register", authHandlers.RegisterHandler)
+	router.POST("/api/auth/login", authHandlers.LoginHandler)
 
-	// WebSocket handler on a separate net/http mux
-	wsServer := websocket.Server{
-		Handler: handlers.WebSocketHandler(healthChecker),
-	}
-	http.Handle("/ws", wsServer)
+	// Server routes
+	router.GET("/api/servers", serverHandlers.GetServers)
+	router.GET("/api/servers/:id", serverHandlers.GetServer)
+	router.POST("/api/servers", serverHandlers.CreateServer)
+	router.PUT("/api/servers/:id", serverHandlers.UpdateServer)
+	router.DELETE("/api/servers/:id", serverHandlers.DeleteServer)
+	router.GET("/api/servers/:id/history", serverHandlers.GetServerHistory)
 
-	// Start listening
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	// WebSocket route
+	router.GET("/api/servers/:id/ws", wsHandler.HandleWebSocket)
+
+	// Start server
+	if err := router.Run(":8080"); err != nil {
+		logger.Error("Failed to start server: %v", err)
 	}
-	fmt.Printf("Server running on port %s\n", port)
-	log.Fatal(router.Run(":" + port))
 }

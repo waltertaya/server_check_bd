@@ -1,0 +1,146 @@
+### Variables
+@baseUrl = http://localhost:8080
+@email = test@example.com
+@password = testpass123
+
+### Authentication
+
+# Register a new user
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+### Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+### Server Management
+
+# Create a new server
+POST {{baseUrl}}/api/servers
+Content-Type: application/json
+
+{
+    "name": "Test Server",
+    "description": "A test server for monitoring",
+    "url": "http://example.com",
+    "method": "GET",
+    "expectedStatus": 200,
+    "timeout": 5000,
+    "interval": 60000
+}
+
+### Get all servers
+GET {{baseUrl}}/api/servers
+
+### Get server by ID
+GET {{baseUrl}}/api/servers/1
+
+### Update server
+PUT {{baseUrl}}/api/servers/1
+Content-Type: application/json
+
+{
+    "name": "Updated Test Server",
+    "url": "https://example.com",
+    "method": "GET",
+    "expectedStatus": 200,
+    "timeout": 10000,
+    "interval": 30000
+}
+
+### Get server history
+GET {{baseUrl}}/api/servers/1/history?limit=10
+
+### Delete server
+DELETE {{baseUrl}}/api/servers/1
+
+### WebSocket Connection
+# Note: WebSocket connections cannot be tested directly in this file
+# Use a WebSocket client or browser to connect to:
+# ws://localhost:8080/api/servers/1/ws
+
+### Example cURL commands for testing
+
+# Register
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"testpass123"}'
+
+# Login
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"testpass123"}'
+
+# Create server
+curl -X POST http://localhost:8080/api/servers \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Test Server",
+    "description": "A test server for monitoring",
+    "url": "http://example.com",
+    "method": "GET",
+    "expectedStatus": 200,
+    "timeout": 5000,
+    "interval": 60000
+  }'
+
+# Get all servers
+curl http://localhost:8080/api/servers
+
+# Get server by ID
+curl http://localhost:8080/api/servers/1
+
+# Update server
+curl -X PUT http://localhost:8080/api/servers/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Test Server",
+    "url": "https://example.com",
+    "method": "GET",
+    "expectedStatus": 200,
+    "timeout": 10000,
+    "interval": 30000
+  }'
+
+# Get server history
+curl http://localhost:8080/api/servers/1/history?limit=10
+
+# Delete server
+curl -X DELETE http://localhost:8080/api/servers/1
+
+### JavaScript WebSocket Example
+```javascript
+// Connect to WebSocket
+const ws = new WebSocket('ws://localhost:8080/api/servers/1/ws');
+
+// Handle connection open
+ws.onopen = () => {
+    console.log('Connected to WebSocket');
+};
+
+// Handle incoming messages
+ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    console.log('Server status:', data);
+};
+
+// Handle errors
+ws.onerror = (error) => {
+    console.error('WebSocket error:', error);
+};
+
+// Handle connection close
+ws.onclose = () => {
+    console.log('Disconnected from WebSocket');
+};
+``` 
